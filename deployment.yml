@@ -1,0 +1,22 @@
+module:
+  git@github.com:enovance/puppet-openstack-cloud
+ansible:
+  git@github.com:enovance/edeploy-roles
+serverspec:
+  git@github.com:enovance/openstack-serverspec.git
+environment:
+  3nodes
+infrastructure:
+  git@github.com:enovance/openstack-yaml-infra.git
+scenario:
+  3nodes_cephless
+jenkins:
+  git@github.com:enovance/jjb-openstack.git
+kernel:
+  http://myroles.example.com/edeploy-roles/@VERSION@/vmlinuz
+pxeramdisk:
+  http://myroles.example.com/edeploy-roles/@VERSION@/initrd.pxe
+healthramdisk:
+  http://myroles.example.com/edeploy-roles/@VERSION@/health.pxe
+edeploy:
+  http://myroles.example.com/edeploy-roles/@VERSION@/
