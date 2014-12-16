@@ -19,6 +19,52 @@ hosts:
     profile: install-server
     ip: 192.168.142.5
     config:
+      apache::mod::passenger::passenger_root: '/usr/local/share/gems/gems/passenger-4.0.53'
+      apache::mod::passenger::mod_lib_path: '/usr/local/share/gems/gems/passenger-4.0.53/buildout/apache2/'
+      cloud::install::puppetmaster::autosign_domains:
+        - '*'
+      cloud::install::puppetmaster::master_configuration:
+        ssl_client_header:
+          setting: ssl_client_header
+          value: SSL_CLIENT_S_DN
+        ssl_client_verify_header:
+          setting: ssl_client_verify_header
+          value: SSL_CLIENT_VERIFY
+      cloud::install::puppetmaster::agent_configuration:
+        certname:
+          setting: certname
+          value: "%{::fqdn}"
+        server:
+          setting: server
+          value: "%{::fqdn}"
+      cloud::install::puppetmaster::puppetmaster_vhost_configuration:
+        puppetmasterd:
+         docroot: '/usr/share/puppet/rack/puppetmasterd/public'
+         port: 8140
+         ssl: true
+         ssl_protocol: 'ALL -SSLv2 -SSLv3'
+         ssl_cipher: 'ALL:!aNULL:!eNULL:!DES:!3DES:!IDEA:!SEED:!DSS:!PSK:!RC4:!MD5:+HIGH:+MEDIUM:!LOW:!SSLv2:!EXP'
+         ssl_honorcipherorder: 'On'
+         ssl_cert: "/var/lib/puppet/ssl/certs/%{::fqdn}.pem"
+         ssl_key: "/var/lib/puppet/ssl/private_keys/%{::fqdn}.pem"
+         ssl_chain: "/var/lib/puppet/ssl/certs/ca.pem"
+         ssl_ca: "/var/lib/puppet/ssl/certs/ca.pem"
+         ssl_verify_client: optional
+         ssl_verify_depth: 1
+         ssl_options:
+           - +StdEnvVars
+           - +ExportCertData
+         request_headers:
+           - 'unset X-Forwarded-For'
+           - "set X-SSL-Subject %%{}{SSL_CLIENT_S_DN}e"
+           - "set X-Client-DN %%{}{SSL_CLIENT_S_DN}e"
+           - "set X-Client-Verify %%{}{SSL_CLIENT_VERIFY}e"
+         rack_base_uris: '/'
+         add_default_charset: 'UTF-8'
+      puppetdb::master::config::puppetdb_server: "%{::fqdn}"
+      puppetdb::master::config::manage_report_processor: true
+      puppetdb::master::config::enable_reports: true
+      puppetdb::master::config::strict_validation: false
       cloud::logging::agent::syslog_enable: false
       fluentd::version: '2'
       elasticsearch::init_template: elasticsearch.RedHat.erb
@@ -335,13 +381,20 @@ config:
   heat_auth_encryption_key: akeytoencrypt
 
   ceph_osd_devices:
-    - vdb
-    - vdc
     - vdd
+    - vde
+    - vdf
   ceph_fsid: 37788630-5f77-11e4-9803-0800200c9a66
   ceph_mon_secret: AQD7kyJQQGoOBhAAqrPAqSopSwPrrfMMomzVdw==
   cinder_rbd_pool: volumes
   cinder_rbd_user: cinder
+  volume_default_volume_type: ceph
+  volume_cinder_backends:
+    rbd:
+      ceph:
+        rbd_pool: volumes
+        rbd_user: cinder
+        rbd_secret_uuid: 4a158d27-f750-41d5-9e7f-26ce4c9d2d45
 
   libvirt_type: kvm
   syslog_server: installserver
