@@ -253,6 +253,7 @@ config:
   mgmt_names: ['openstack1', 'openstack2', 'openstack3']
   mgmt_internal_ips: ['192.168.142.6', '192.168.142.7', '192.168.142.8']
   spof_cluster_members : 'openstack1 openstack2 openstack3'
+  horizon_debug: true
   horizon_allowed_hosts:
     - vip.example.com
 
