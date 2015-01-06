@@ -19,8 +19,6 @@ hosts:
     profile: install-server
     ip: 192.168.142.5
     config:
-      apache::mod::passenger::passenger_root: '/usr/local/share/gems/gems/passenger-4.0.55'
-      apache::mod::passenger::mod_lib_path: '/usr/local/share/gems/gems/passenger-4.0.55/buildout/apache2/'
       cloud::install::puppetmaster::autosign_domains:
         - '*'
       cloud::install::puppetmaster::master_configuration:
@@ -236,6 +234,8 @@ hosts:
       sensu::install_repo: false
 
 config:
+  passenger_root: '/usr/local/share/gems/gems/passenger-4.0.57'
+  passenger_mod_lib_path: '/usr/local/share/gems/gems/passenger-4.0.57/buildout/apache2/'
   domain: example.com
   user: root
   puppet_master: installserver.example.com
