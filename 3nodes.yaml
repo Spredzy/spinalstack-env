@@ -59,14 +59,10 @@ hosts:
            - "set X-Client-Verify %%{}{SSL_CLIENT_VERIFY}e"
          rack_base_uris: '/'
          add_default_charset: 'UTF-8'
-      puppetdb::master::config::puppetdb_server: "%{::fqdn}"
-      puppetdb::master::config::manage_report_processor: true
-      puppetdb::master::config::enable_reports: true
-      puppetdb::master::config::strict_validation: false
       cloud::logging::agent::syslog_enable: false
+      apache::purge_configs: false
       fluentd::version: '2'
       elasticsearch::init_template: elasticsearch.RedHat.erb
-      kibana3::manage_ws: false
       kibana3::config_es_server: "%{::ipaddress}"
       kibana3::config_kibana_index: fluentd
       sensu::server: true
@@ -328,8 +324,11 @@ config:
   ks_neutron_admin_proto: https
   neutron_type_drivers:
     - gre
-  neutron_mechanism_drivers: openvswitch
-  neutron_tunnel_id_ranges: 1:10000
+  neutron_mechanism_drivers:
+    - openvswitch
+    - l2population
+  neutron_tunnel_id_ranges:
+    - 1:10000
   neutron_firewall_driver: neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewall
   neutron_metadata_proxy_shared_secret: jffoiewirepwnfudenvfuieqE
       
@@ -365,7 +364,6 @@ config:
     8ZiV84kBu/3yCpDyrBnDj/egOIj+jBWA2eOiJ/V2FYhPn9zCZpFW
     -----END RSA PRIVATE KEY-----
 
-  glance_backend: file
   glance_db_password: glance_db_password
   ks_glance_password: ks_glance_db_password
 
@@ -401,3 +399,5 @@ config:
   libvirt_type: kvm
   syslog_server: installserver
   syslog_port: 5140
+
+  mongodb_version: 2.6.5-2.el7ost
