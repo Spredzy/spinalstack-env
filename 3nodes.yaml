@@ -4,13 +4,12 @@ profiles:
     steps:
       1:
         roles:
-          - cloud::logging::server
           - cloud::monitoring::server::sensu
   openstack-full:
     steps:
       1:
         roles:
-          - cloud::logging::agent
+          - cloud::logging::server
       3:
         roles:
           - cloud::monitoring::agent::sensu
@@ -19,46 +18,6 @@ hosts:
     profile: install-server
     ip: 192.168.142.5
     config:
-      cloud::install::puppetmaster::autosign_domains:
-        - '*'
-      cloud::install::puppetmaster::master_configuration:
-        ssl_client_header:
-          setting: ssl_client_header
-          value: SSL_CLIENT_S_DN
-        ssl_client_verify_header:
-          setting: ssl_client_verify_header
-          value: SSL_CLIENT_VERIFY
-      cloud::install::puppetmaster::agent_configuration:
-        certname:
-          setting: certname
-          value: "%{::fqdn}"
-        server:
-          setting: server
-          value: "%{::fqdn}"
-      cloud::install::puppetmaster::puppetmaster_vhost_configuration:
-        puppetmasterd:
-         docroot: '/usr/share/puppet/rack/puppetmasterd/public'
-         port: 8140
-         ssl: true
-         ssl_protocol: 'ALL -SSLv2 -SSLv3'
-         ssl_cipher: 'ALL:!aNULL:!eNULL:!DES:!3DES:!IDEA:!SEED:!DSS:!PSK:!RC4:!MD5:+HIGH:+MEDIUM:!LOW:!SSLv2:!EXP'
-         ssl_honorcipherorder: 'On'
-         ssl_cert: "/var/lib/puppet/ssl/certs/%{::fqdn}.pem"
-         ssl_key: "/var/lib/puppet/ssl/private_keys/%{::fqdn}.pem"
-         ssl_chain: "/var/lib/puppet/ssl/certs/ca.pem"
-         ssl_ca: "/var/lib/puppet/ssl/certs/ca.pem"
-         ssl_verify_client: optional
-         ssl_verify_depth: 1
-         ssl_options:
-           - +StdEnvVars
-           - +ExportCertData
-         request_headers:
-           - 'unset X-Forwarded-For'
-           - "set X-SSL-Subject %%{}{SSL_CLIENT_S_DN}e"
-           - "set X-Client-DN %%{}{SSL_CLIENT_S_DN}e"
-           - "set X-Client-Verify %%{}{SSL_CLIENT_VERIFY}e"
-         rack_base_uris: '/'
-         add_default_charset: 'UTF-8'
       cloud::logging::agent::syslog_enable: false
       apache::purge_configs: false
       fluentd::version: '2'
@@ -104,11 +63,32 @@ hosts:
             index_name: fluentd
             type_name: fluentd
             port: 9200
-            host: "%{::ipaddress}"
+            host: 'vip.example.com'
   openstack1:
     profile: openstack-full
     ip: 192.168.142.6
     config:
+      cloud::logging::agent::sources:
+        syslog:
+          configfile: syslog
+          type: syslog
+          tag: system.syslog
+          config:
+            port: 5140
+            bind: 0.0.0.0
+            with_priority:
+      cloud::logging::agent::matches:
+        elasticsearch:
+          configfile: elasticsearch
+          pattern: "**"
+          type: elasticsearch
+          config:
+            logstash_format: true
+            index_name: fluentd
+            type_name: fluentd
+            port: 9200
+            host: 'vip.example.com'
+      elasticsearch::init_template: elasticsearch.RedHat.erb
       cloud::compute::hypervisor::vm_rbd: false
       cloud::storage::rbd::osd::public_address: "%{hiera('public_netif_ip')}"
       cloud::storage::rbd::osd::cluster_address: "%{hiera('internal_netif_ip')}"
@@ -152,6 +132,27 @@ hosts:
     profile: openstack-full
     ip: 192.168.142.7
     config:
+      cloud::logging::agent::sources:
+        syslog:
+          configfile: syslog
+          type: syslog
+          tag: system.syslog
+          config:
+            port: 5140
+            bind: 0.0.0.0
+            with_priority:
+      cloud::logging::agent::matches:
+        elasticsearch:
+          configfile: elasticsearch
+          pattern: "**"
+          type: elasticsearch
+          config:
+            logstash_format: true
+            index_name: fluentd
+            type_name: fluentd
+            port: 9200
+            host: 'vip.example.com'
+      elasticsearch::init_template: elasticsearch.RedHat.erb
       cloud::compute::hypervisor::vm_rbd: false
       cloud::storage::rbd::osd::public_address: "%{hiera('public_netif_ip')}"
       cloud::storage::rbd::osd::cluster_address: "%{hiera('internal_netif_ip')}"
@@ -192,6 +193,27 @@ hosts:
     profile: openstack-full
     ip: 192.168.142.8
     config:
+      cloud::logging::agent::sources:
+        syslog:
+          configfile: syslog
+          type: syslog
+          tag: system.syslog
+          config:
+            port: 5140
+            bind: 0.0.0.0
+            with_priority:
+      cloud::logging::agent::matches:
+        elasticsearch:
+          configfile: elasticsearch
+          pattern: "**"
+          type: elasticsearch
+          config:
+            logstash_format: true
+            index_name: fluentd
+            type_name: fluentd
+            port: 9200
+            host: 'vip.example.com'
+      elasticsearch::init_template: elasticsearch.RedHat.erb
       cloud::compute::hypervisor::vm_rbd: false
       cloud::storage::rbd::osd::public_address: "%{hiera('public_netif_ip')}"
       cloud::storage::rbd::osd::cluster_address: "%{hiera('internal_netif_ip')}"
@@ -230,8 +252,6 @@ hosts:
       sensu::install_repo: false
 
 config:
-  passenger_root: '/usr/local/share/gems/gems/passenger-4.0.57'
-  passenger_mod_lib_path: '/usr/local/share/gems/gems/passenger-4.0.57/buildout/apache2/'
   domain: example.com
   user: root
   puppet_master: installserver.example.com
