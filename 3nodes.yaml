@@ -5,12 +5,12 @@ profiles:
       1:
         roles:
           - cloud::logging::server
-          - cloud::monitoring::server::sensu
   openstack-full:
     steps:
       1:
         roles:
           - cloud::logging::agent
+          - cloud::monitoring::server::sensu
       3:
         roles:
           - cloud::monitoring::agent::sensu
@@ -68,15 +68,6 @@ hosts:
       sensu::server: true
       sensu::api: true
       sensu::subscriptions: base
-      sensu::rabbitmq_password: rabbitpassword
-      sensu::rabbitmq_host: 192.168.142.6
-      sensu::rabbitmq_vhost: '/sensu'
-      sensu::install_repo: false
-      uchiwa::install_repo: false
-      uchiwa::user: admin
-      uchiwa::pass: password
-      uchiwa::host: "%{::ipaddress}"
-      uchiwa::install_repo: false
       cloud::monitoring::server::sensu::checks:
         'check-mem' :
           command: '/etc/sensu/plugins/check-mem.sh -w 150 -c 100'
@@ -143,11 +134,9 @@ hosts:
       cloud::object::storage::ring_container_device: loop0
       cloud::object::storage::ring_account_device: loop0
       fluentd::version: '2'
+      sensu::server: true
+      sensu::api: true
       sensu::subscriptions: base
-      sensu::rabbitmq_password: rabbitpassword
-      sensu::rabbitmq_host: 192.168.142.6
-      sensu::rabbitmq_vhost: '/sensu'
-      sensu::install_repo: false
   openstack2:
     profile: openstack-full
     ip: 192.168.142.7
@@ -183,11 +172,9 @@ hosts:
       cloud::object::storage::ring_container_device: loop0
       cloud::object::storage::ring_account_device: loop0
       fluentd::version: '2'
+      sensu::server: true
+      sensu::api: true
       sensu::subscriptions: base
-      sensu::rabbitmq_password: rabbitpassword
-      sensu::rabbitmq_host: 192.168.142.6
-      sensu::rabbitmq_vhost: '/sensu'
-      sensu::install_repo: false
   openstack3:
     profile: openstack-full
     ip: 192.168.142.8
@@ -223,11 +210,9 @@ hosts:
       cloud::object::storage::ring_container_device: loop0
       cloud::object::storage::ring_account_device: loop0
       fluentd::version: '2'
+      sensu::server: true
+      sensu::api: true
       sensu::subscriptions: base
-      sensu::rabbitmq_password: rabbitpassword
-      sensu::rabbitmq_host: 192.168.142.6
-      sensu::rabbitmq_vhost: '/sensu'
-      sensu::install_repo: false
 
 config:
   passenger_root: '/usr/local/share/gems/gems/passenger-4.0.57'
