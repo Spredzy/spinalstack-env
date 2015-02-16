@@ -5,16 +5,15 @@ profiles:
       1:
         roles:
           - cloud::logging::server
-          - cloud::monitoring::server::sensu
   openstack-full:
     steps:
       1:
         roles:
           - cloud::logging::agent
-          - cloud::database::nosql::mongodb::mongos
       3:
         roles:
           - cloud::monitoring::agent::sensu
+          - cloud::monitoring::server::sensu
 hosts:
   installserver:
     profile: install-server
@@ -26,8 +25,6 @@ hosts:
       elasticsearch::init_template: elasticsearch.RedHat.erb
       kibana3::config_es_server: "%{::ipaddress}"
       kibana3::config_kibana_index: fluentd
-      sensu::server: true
-      sensu::api: true
       sensu::subscriptions: base
       sensu::rabbitmq_password: rabbitpassword
       sensu::rabbitmq_host: 192.168.142.6
@@ -38,14 +35,6 @@ hosts:
       uchiwa::pass: password
       uchiwa::host: "%{::ipaddress}"
       uchiwa::install_repo: false
-      cloud::monitoring::server::sensu::checks:
-        'check-mem' :
-          command: '/etc/sensu/plugins/check-mem.sh -w 150 -c 100'
-          subscribers: base
-          standalone: false
-      cloud::monitoring::server::sensu::plugins:
-        'https://raw.githubusercontent.com/sensu/sensu-community-plugins/master/plugins/system/check-mem.sh' :
-          type: url
       cloud::logging::agent::sources:
         syslog:
           configfile: syslog
@@ -66,20 +55,81 @@ hosts:
             type_name: fluentd
             port: 9200
             host: "%{::ipaddress}"
+            flush_interval: 5
   openstack1:
     profile: openstack-full
     ip: 192.168.142.6
     config:
-      cloud::database::nosql::mode: 'configsvr'
-      cloud::database::nosql::mongos::enable: true
-      cloud::database::nosql::mongos::mongos_cfg_server:
-        - '192.168.142.6:27019'
-      cloud::database::nosql::mongos::replset_members:
-        - '192.168.142.7:27018'
-        - '192.168.142.8:27018'
-      cloud::database::nosql::mongos::sharding_keys:
-            - 'ceilometer.name':
-                name: 1
+      sensu::server: true
+      sensu::api: true
+      cloud::monitoring::server::sensu::checks:
+        'check-mem' :
+          command: '/etc/sensu/plugins/check-mem.sh -w 150 -c 100'
+          subscribers: base
+          standalone: false
+        'check_ntp_time' :
+          command: '/usr/lib64/nagios/plugins/check_ntp_time -H 0.rhel.pool.ntp.org -w 0.5 -c 1'
+          subscribers: base
+          standalone: false
+        'check_disk' :
+          command: '/usr/lib64/nagios/plugins/check_disk -w 80 -c 90 --path /'
+          subscribers: base
+          standalone: false
+        'check_dns' :
+          command: '/usr/lib64/nagios/plugins/check_dns -H vip.example.com -s 94.143.114.197 -w 0.1 -c 0.2'
+          subscribers: base
+          standalone: false
+        'check_load' :
+          command: '/usr/lib64/nagios/plugins/check_load -w 0.7,0.6,0.5 -c 0.9,0.8,0.7'
+          subscribers: base
+          standalone: false
+        'check_swap' :
+          command: '/usr/lib64/nagios/plugins/check_swap -w 50% -c 25%'
+          subscribers: base
+          standalone: false
+        'cinder-api' :
+          command: 'oschecks-check_cinder_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'nova-api' :
+          command: 'oschecks-check_nova_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'ceilometer-api' :
+          command: 'oschecks-check_ceilometer_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'keystone-api' :
+          command: 'oschecks-check_keystone_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'neutron-api' :
+          command: 'oschecks-check_neutron_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'glance-api' :
+          command: 'oschecks-check_glance_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'ceilometer-collector' :
+          command: 'sudo oschecks-check_amqp ceilometer-collector'
+          subscribers: openstack-amqp
+          standalone: false
+        'ceilometer-agent-notification' :
+          command: 'sudo oschecks-check_amqp ceilometer-agent-notification'
+          subscribers: openstack-amqp
+          standalone: false
+
+      cloud::monitoring::server::sensu::plugins:
+        'https://raw.githubusercontent.com/sensu/sensu-community-plugins/master/plugins/system/check-mem.sh' :
+          type: url
+      #cloud::database::nosql::mongodb::mongos::enable: true
+      #mongodb::server::configsvr: true
+      #monbodb::server::bind_ip: 127.0.0.1
+      #mongodb::mongos::pidfilepath: '/var/run/mongodb/mongos.pid'
+      #mongodb::mongos::unixsocketprefix: '/var/run/mongodb'
+      #mongodb::mongos::logpath: '/var/log/mongodb/mongodb-shard.log'
+      #mongodb::mongos::fork: true
       cloud::compute::hypervisor::vm_rbd: false
       cloud::storage::rbd::osd::public_address: "%{hiera('public_netif_ip')}"
       cloud::storage::rbd::osd::cluster_address: "%{hiera('internal_netif_ip')}"
@@ -123,8 +173,76 @@ hosts:
     profile: openstack-full
     ip: 192.168.142.7
     config:
-      cloud::database::nosql::mongos::enable: false
-      cloud::database::nosql::mode: 'shardsvr'
+      sensu::server: true
+      sensu::api: true
+      cloud::monitoring::server::sensu::manage_sensu_plugins: false
+      cloud::monitoring::server::sensu::checks:
+        'check-mem' :
+          command: '/etc/sensu/plugins/check-mem.sh -w 150 -c 100'
+          subscribers: base
+          standalone: false
+        'check_ntp_time' :
+          command: '/usr/lib64/nagios/plugins/check_ntp_time -H 0.rhel.pool.ntp.org -w 0.5 -c 1'
+          subscribers: base
+          standalone: false
+        'check_disk' :
+          command: '/usr/lib64/nagios/plugins/check_disk -w 80 -c 90 --path /'
+          subscribers: base
+          standalone: false
+        'check_dns' :
+          command: '/usr/lib64/nagios/plugins/check_dns -H vip.example.com -s 94.143.114.197 -w 0.1 -c 0.2'
+          subscribers: base
+          standalone: false
+        'check_load' :
+          command: '/usr/lib64/nagios/plugins/check_load -w 0.7,0.6,0.5 -c 0.9,0.8,0.7'
+          subscribers: base
+          standalone: false
+        'check_swap' :
+          command: '/usr/lib64/nagios/plugins/check_swap -w 50% -c 25%'
+          subscribers: base
+          standalone: false
+        'cinder-api' :
+          command: 'oschecks-check_cinder_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'nova-api' :
+          command: 'oschecks-check_nova_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'ceilometer-api' :
+          command: 'oschecks-check_ceilometer_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'keystone-api' :
+          command: 'oschecks-check_keystone_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'neutron-api' :
+          command: 'oschecks-check_neutron_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'glance-api' :
+          command: 'oschecks-check_glance_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'ceilometer-collector' :
+          command: 'sudo oschecks-check_amqp ceilometer-collector'
+          subscribers: openstack-amqp
+          standalone: false
+        'ceilometer-agent-notification' :
+          command: 'sudo oschecks-check_amqp ceilometer-agent-notification'
+          subscribers: openstack-amqp
+          standalone: false
+
+      cloud::monitoring::server::sensu::plugins:
+        'https://raw.githubusercontent.com/sensu/sensu-community-plugins/master/plugins/system/check-mem.sh' :
+          type: url
+      #cloud::database::nosql::mongodb::mongos::enable: false
+      #mongodb::server::shardsvr: true
+      #mongodb::server::bind_ip: 192.168.142.7
+      #mongodb::server::replset: ceilometer
+      redis::slaveof: 'openstack1.example.com 6379'
+      cloud::monitoring::server::sensu::manage_rabbitmq_resources: false
       cloud::compute::hypervisor::vm_rbd: false
       cloud::storage::rbd::osd::public_address: "%{hiera('public_netif_ip')}"
       cloud::storage::rbd::osd::cluster_address: "%{hiera('internal_netif_ip')}"
@@ -165,8 +283,76 @@ hosts:
     profile: openstack-full
     ip: 192.168.142.8
     config:
-      cloud::database::nosql::mongos::enable: false
-      cloud::database::nosql::mode: 'shardsvr'
+      sensu::server: true
+      sensu::api: true
+      cloud::monitoring::server::sensu::manage_sensu_plugins: false
+      cloud::monitoring::server::sensu::checks:
+        'check-mem' :
+          command: '/etc/sensu/plugins/check-mem.sh -w 150 -c 100'
+          subscribers: base
+          standalone: false
+        'check_ntp_time' :
+          command: '/usr/lib64/nagios/plugins/check_ntp_time -H 0.rhel.pool.ntp.org -w 0.5 -c 1'
+          subscribers: base
+          standalone: false
+        'check_disk' :
+          command: '/usr/lib64/nagios/plugins/check_disk -w 80 -c 90 --path /'
+          subscribers: base
+          standalone: false
+        'check_dns' :
+          command: '/usr/lib64/nagios/plugins/check_dns -H vip.example.com -s 94.143.114.197 -w 0.1 -c 0.2'
+          subscribers: base
+          standalone: false
+        'check_load' :
+          command: '/usr/lib64/nagios/plugins/check_load -w 0.7,0.6,0.5 -c 0.9,0.8,0.7'
+          subscribers: base
+          standalone: false
+        'check_swap' :
+          command: '/usr/lib64/nagios/plugins/check_swap -w 50% -c 25%'
+          subscribers: base
+          standalone: false
+        'cinder-api' :
+          command: 'oschecks-check_cinder_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'nova-api' :
+          command: 'oschecks-check_nova_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'ceilometer-api' :
+          command: 'oschecks-check_ceilometer_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'keystone-api' :
+          command: 'oschecks-check_keystone_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'neutron-api' :
+          command: 'oschecks-check_neutron_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'glance-api' :
+          command: 'oschecks-check_glance_api --os-auth-url https://vip.example.com:5000/v2.0 --os-username admin --os-tenant-name admin --os-password Xokoph5io2aenaoh0nuiquei9aineigo'
+          subscribers: openstack-api
+          standalone: false
+        'ceilometer-collector' :
+          command: 'sudo oschecks-check_amqp ceilometer-collector'
+          subscribers: openstack-amqp
+          standalone: false
+        'ceilometer-agent-notification' :
+          command: 'sudo oschecks-check_amqp ceilometer-agent-notification'
+          subscribers: openstack-amqp
+          standalone: false
+
+      cloud::monitoring::server::sensu::plugins:
+        'https://raw.githubusercontent.com/sensu/sensu-community-plugins/master/plugins/system/check-mem.sh' :
+          type: url
+      #cloud::database::nosql::mongodb::mongos::enable: false
+      #mongodb::server::shardsvr: true
+      #mongodb::server::bind_ip: 192.168.142.8
+      #mongodb::server::replset: ceilometer
+      redis::slaveof: 'openstack1.example.com 6379'
+      cloud::monitoring::server::sensu::manage_rabbitmq_resources: false
       cloud::compute::hypervisor::vm_rbd: false
       cloud::storage::rbd::osd::public_address: "%{hiera('public_netif_ip')}"
       cloud::storage::rbd::osd::cluster_address: "%{hiera('internal_netif_ip')}"
@@ -205,8 +391,6 @@ hosts:
       sensu::install_repo: false
 
 config:
-  passenger_root: '/usr/local/share/gems/gems/passenger-4.0.57'
-  passenger_mod_lib_path: '/usr/local/share/gems/gems/passenger-4.0.57/buildout/apache2/'
   domain: example.com
   user: root
   puppet_master: installserver.example.com
@@ -234,12 +418,14 @@ config:
   storage_network: 192.168.142.0/24
 
   mongo_nodes:
+    - 192.168.142.6
     - 192.168.142.7
     - 192.168.142.8
 
   mongo_replset_members:
-    - 192.168.142.7:27018
-    - 192.168.142.8:27018
+    - 192.168.142.6:27017
+    - 192.168.142.7:27017
+    - 192.168.142.8:27017
   
   ntp_servers:
     - 0.centos.pool.ntp.org
@@ -379,3 +565,10 @@ config:
   syslog_port: 5140
 
   mongodb_version: 2.6.5-2.el7ost
+  erlang_cookie: acookie
+
+  redis_master_name: openstack1.example.com
+
+  sudo_configs:
+    'vagrant':
+      'content': 'sensu ALL = NOPASSWD:ALL'
