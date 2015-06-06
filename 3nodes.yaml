@@ -1,4 +1,4 @@
-infra: 3nodes
+infra: 3ctrl_3contrail_Xcpt
 profiles:
   install-server:
     steps:
@@ -15,10 +15,70 @@ profiles:
           - cloud::monitoring::agent::sensu
           - cloud::monitoring::server::sensu
 hosts:
+  compute1:
+    profile: compute
+    ip: 192.168.142.12
+    config:
+      ntp::iburst_enable: true
+      ntp::servers:
+        - 10.16.151.254
+      ntp::restrict:
+        - 'default nomodify notrap nopeer noquery'
+        - '127.0.0.1'
+        - '-6 ::1'
+      #contrail::vrouter::config::vhost_ip: 192.168.142.12
+      #contrail::vrouter::config::discovery_ip: 192.168.142.42
+      #contrail::vrouter::config::gateway: 192.168.142.1
+      #contrail::vrouter::config::vrouter_agent_config:
+      #    'DISCOVERY/server':
+      #      value: '192.168.142.42'
+      #    'DISCOVERY/max_control_nodes':
+      #      value: 2
+      #    'HYPERVISOR/type':
+      #      value: 'kvm'
+      #    'NETWORKS/control_network_ip':
+      #      value: '192.168.142.12'
+      #    'VIRTUAL-HOST-INTERFACE/name':
+      #      value: 'vhost0'
+      #    'VIRTUAL-HOST-INTERFACE/compute_node_address':
+      #      ensure: absent
+      #    'VIRTUAL-HOST-INTERFACE/ip':
+      #      value: '192.168.142.12/24'
+      #    'VIRTUAL-HOST-INTERFACE/gateway':
+      #      value: '192.168.142.1'
+      #    'VIRTUAL-HOST-INTERFACE/physical_interface':
+      #      value: 'eth0'
+      #nova::compute::neutron::libvirt_vif_driver: contrail_vif.contrailvif.VRouterVIFDriver
+      #cloud::compute::hypervisor::libvirt_type: qemu
+      #nova::network::neutron::network_api_class: 'nova_contrail_vif.contrailvif.ContrailNetworkAPI'
+      #contrail::vrouter::config::vrouter_nodemgr_config:
+      #    'DISCOVERY/server':
+      #      value: '192.168.142.42' 
+      #contrail::vrouter::provision_vrouter::api_address: 192.168.142.42
+
+      #contrail::vnc_api::vnc_api_config:
+      #    'global/WEB_SERVER':
+      #      value: 192.168.142.42
+      #    'auth/AUTHN_SERVER':
+      #      value: 192.168.142.42
+
+      #contrail::service_token::keystone_service_token: kpimopmiopmidfmpoifdmsaifdsanufdsqiufwqnufidsapnuipsafds
+
+      #contrail::ctrl_details::keystone_service_token: kpimopmiopmidfmpoifdmsaifdsanufdsqiufwqnufidsapnuipsafds
+      #contrail::ctrl_details::openstack_public_vip: 192.168.142.42
+      #contrail::ctrl_details::openstack_external_vip: 192.168.142.42
+      #contrail::ctrl_details::amqp_ip: 192.168.142.6
   installserver:
     profile: install-server
     ip: 192.168.142.5
     config:
+      ntp::iburst_enable: true
+      ntp::servers:
+        - 10.16.151.254
+      ntp::restrict:
+        - 'default nomodify notrap nopeer noquery'
+        - '127.0.0.1'
+        - '-6 ::1'
       cloud::logging::agent::syslog_enable: false
       apache::purge_configs: false
       fluentd::version: '2'
@@ -60,6 +120,26 @@ hosts:
     profile: openstack-full
     ip: 192.168.142.6
     config:
+      ntp::iburst_enable: true
+      ntp::servers:
+        - 10.16.151.254
+      ntp::restrict:
+        - 'default nomodify notrap nopeer noquery'
+        - '127.0.0.1'
+        - '-6 ::1'
+      #cloud::network::contrail::haproxy::contrail_analytics_api: true
+      #cloud::network::contrail::haproxy::contrail_config_api: true
+      #cloud::network::contrail::haproxy::contrail_config_discovery: true
+      #cloud::network::contrail::haproxy::contrail_webui_http: true
+      #cloud::network::contrail::haproxy::contrail_webui_https: true
+      #cloud::network::plugin: opencontrail
+      #cloud::network::controller::plugin: opencontrail
+      #cloud::network::controller::ks_keystone_admin_token: kpimopmiopmidfmpoifdmsaifdsanufdsqiufwqnufidsapnuipsafds
+      #cloud::network::controller::contrail_api_server_ip: 192.168.142.42
+      #cloud::network::controller::contrail_extensions: ['ipam:neutron_plugin_contrail.plugins.opencontrail.contrail_plugin_ipam.NeutronPluginContrailIpam','policy:neutron_plugin_contrail.plugins.opencontrail.contrail_plugin_policy.NeutronPluginContrailPolicy','route-table:neutron_plugin_contrail.plugins.opencontrail.contrail_plugin_vpc.NeutronPluginContrailVpc']
+      #neutron::quota::quota_driver: neutron_plugin_contrail.plugins.opencontrail.quota.driver.QuotaDriver
+      #neutron::api_extensions_path: extensions:/usr/lib/python2.7/site-packages/neutron_plugin_contrail/extensions
+      #cloud::network::service_plugins: ['neutron_plugin_contrail.plugins.opencontrail.loadbalancer.plugin.LoadBalancerPlugin']
       sensu::server: true
       sensu::api: true
       cloud::monitoring::server::sensu::checks:
@@ -173,6 +253,26 @@ hosts:
     profile: openstack-full
     ip: 192.168.142.7
     config:
+      ntp::iburst_enable: true
+      ntp::servers:
+        - 10.16.151.254
+      ntp::restrict:
+        - 'default nomodify notrap nopeer noquery'
+        - '127.0.0.1'
+        - '-6 ::1'
+#      cloud::network::contrail::haproxy::contrail_analytics_api: true
+#      cloud::network::contrail::haproxy::contrail_config_api: true
+#      cloud::network::contrail::haproxy::contrail_config_discovery: true
+#      cloud::network::contrail::haproxy::contrail_webui_http: true
+#      cloud::network::contrail::haproxy::contrail_webui_https: true
+#      cloud::network::plugin: opencontrail
+#      cloud::network::controller::plugin: opencontrail
+#      cloud::network::controller::ks_keystone_admin_token: kpimopmiopmidfmpoifdmsaifdsanufdsqiufwqnufidsapnuipsafds
+#      cloud::network::controller::contrail_api_server_ip: 192.168.142.42
+#      cloud::network::controller::contrail_extensions: ['ipam:neutron_plugin_contrail.plugins.opencontrail.contrail_plugin_ipam.NeutronPluginContrailIpam','policy:neutron_plugin_contrail.plugins.opencontrail.contrail_plugin_policy.NeutronPluginContrailPolicy','route-table:neutron_plugin_contrail.plugins.opencontrail.contrail_plugin_vpc.NeutronPluginContrailVpc']
+#      neutron::quota::quota_driver: neutron_plugin_contrail.plugins.opencontrail.quota.driver.QuotaDriver
+#      neutron::api_extensions_path: extensions:/usr/lib/python2.7/site-packages/neutron_plugin_contrail/extensions
+#      cloud::network::service_plugins: ['neutron_plugin_contrail.plugins.opencontrail.loadbalancer.plugin.LoadBalancerPlugin']
       sensu::server: true
       sensu::api: true
       cloud::monitoring::server::sensu::manage_sensu_plugins: false
@@ -283,6 +383,26 @@ hosts:
     profile: openstack-full
     ip: 192.168.142.8
     config:
+      ntp::iburst_enable: true
+      ntp::servers:
+        - 10.16.151.254
+      ntp::restrict:
+        - 'default nomodify notrap nopeer noquery'
+        - '127.0.0.1'
+        - '-6 ::1'
+#      cloud::network::contrail::haproxy::contrail_analytics_api: true
+#      cloud::network::contrail::haproxy::contrail_config_api: true
+#      cloud::network::contrail::haproxy::contrail_config_discovery: true
+#      cloud::network::contrail::haproxy::contrail_webui_http: true
+#      cloud::network::contrail::haproxy::contrail_webui_https: true
+#      cloud::network::plugin: opencontrail
+#      cloud::network::controller::plugin: opencontrail
+#      cloud::network::controller::ks_keystone_admin_token: kpimopmiopmidfmpoifdmsaifdsanufdsqiufwqnufidsapnuipsafds
+#      cloud::network::controller::contrail_api_server_ip: 192.168.142.42
+#      cloud::network::controller::contrail_extensions: ['ipam:neutron_plugin_contrail.plugins.opencontrail.contrail_plugin_ipam.NeutronPluginContrailIpam','policy:neutron_plugin_contrail.plugins.opencontrail.contrail_plugin_policy.NeutronPluginContrailPolicy','route-table:neutron_plugin_contrail.plugins.opencontrail.contrail_plugin_vpc.NeutronPluginContrailVpc']
+#      neutron::quota::quota_driver: neutron_plugin_contrail.plugins.opencontrail.quota.driver.QuotaDriver
+#      neutron::api_extensions_path: extensions:/usr/lib/python2.7/site-packages/neutron_plugin_contrail/extensions
+#      cloud::network::service_plugins: ['neutron_plugin_contrail.plugins.opencontrail.loadbalancer.plugin.LoadBalancerPlugin']
       sensu::server: true
       sensu::api: true
       cloud::monitoring::server::sensu::manage_sensu_plugins: false
@@ -389,6 +509,904 @@ hosts:
       sensu::rabbitmq_host: 192.168.142.6
       sensu::rabbitmq_vhost: '/sensu'
       sensu::install_repo: false
+  contrail1:
+    profile: contrail
+    ip: 192.168.142.9
+    config:
+      zookeeper::id: '1'
+      redis::bind: '0.0.0.0'
+      ntp::iburst_enable: true
+      ntp::servers:
+        - 10.16.151.254
+      ntp::restrict:
+        - 'default nomodify notrap nopeer noquery'
+        - '127.0.0.1'
+        - '-6 ::1'
+      #cloud::network::contrail::webui::http_port: '8079'
+      #cloud::network::contrail::webui::http_bind_ip: '%{::ipaddress}'
+      #cloud::network::contrail::webui::https_bind_ip: '%{::ipaddress}'
+      #cloud::network::contrail::analytics::bind_ip: '%{::ipaddress}'
+      #cloud::network::contrail::config::api_bind_ip: '%{::ipaddress}'
+      #cloud::network::contrail::config::discovery_bind_ip: '%{::ipaddress}'
+      #cassandra::cluster_name: 'contrail'
+      #cassandra::listen_address: "%{::ipaddress}"
+      #cassandra::seeds: '192.168.142.9'
+      #cassandra::cassandra_package_name: cassandra12
+      #cassandra::java_package_name: java-1.7.0-openjdk
+      #cassandra::java_package_ensure: installed
+      #cassandra::manage_dsc_repo: false
+      #cassandra::manage_service: false
+      #cassandra::cassandra_yaml_tmpl: 'cassandra/cassandra1.yaml.erb'
+      #cassandra::rpc_address: "%{::ipaddress}"
+      #zookeeper::servers:
+      #  - '192.168.142.9'
+      #  - '192.168.142.10'
+      #  - '192.168.142.11'
+      #kafka::broker::install_dir: '/usr/share/kafka'
+      #kafka::broker::install_manage: false
+      #kafka::broker::install_java: false
+      #kafka::broker::config:
+      #  port: 9092
+      #  'broker.id': "%{hiera('zookeeper::id')}"
+      #  'host.name': "%{::hostname}"
+      #  'zookeeper.connect': '192.168.142.9:2181,192.168.142.10:2181,192.168.142.11:2181'
+      #contrail::vnc_api_config:
+      #    'global/WEB_SERVER':
+      #      value: 192.168.142.42
+      #    'auth/AUTHN_SERVER':
+      #      value: 192.168.142.42
+      #contrail::database::config::database_nodemgr_config:
+      #    'DEFAULT/hostip':
+      #      value: '192.168.142.9'
+      #    'DISCOVERY/server':
+      #      value: '192.168.142.42'
+      # WebUI
+      #contrail::webui::config::openstack_vip: '192.168.142.42'
+      #contrail::webui::config::contrail_vip: '192.168.142.42'
+      #contrail::webui::config::cassandra_ip: ['192.168.142.9', '192.168.142.10', '192.168.142.11']
+      #contrail::webui::config::redis_vip: '192.168.142.9'
+      #contrail::webui::config::contrail_webui_http_port: '8079'
+      #contrail::webui::config::contrail_webui_https_port: '8143'
+      # Analytics Node
+      #contrail::analytics::config::analytics_api_config:
+      #   'DEFAULTS/host_ip':
+      #     value: '192.168.142.42'
+      #   'DEFAULTS/cassandra_server_list':
+      #     value: 'contrail1:9160 contrail2:9160 contrail3:9160'
+      #   'DEFAULTS/collectors':
+      #     value: 'contrail1:8086'
+      #   'DISCOVERY/disc_server_ip':
+      #     value: '192.168.142.42'
+      #contrail::analytics::config::collector_config:
+      #    'DEFAULT/cassandra_server_list':
+      #      value: 'contrail1:9160 contrail2:9160 contrail3:9160'
+      #    'DEFAULT/kafka_broker_list':
+      #      value: 'contrail1:9092 contrail2:9092 contrail3:9092'
+      #    'DEFAULT/syslog_port':
+      #      value: -1
+      #    'DISCOVERY/server':
+      #      value: '192.168.142.42'
+      #contrail::analytics::config::query_engine_config:
+      #    'DEFAULT/hostip':
+      #     value: "%{::ipaddress}"
+      #    'DEFAULT/cassandra_server_list':
+      #      value: 'contrail1:9160 contrail2:9160 contrail3:9160'
+      #contrail::analytics::config::snmp_collector_config:
+      #    'DEFAULTS/api_server':
+      #      value: '192.168.142.42:8082'
+      #    'DEFAULTS/collectors':
+      #      value: '192.168.142.9:8086'
+      #    'DISCOVERY/disc_server_ip':
+      #      value: '192.168.142.42' 
+      #    'DEFAULTS/zookeeper':
+      #      value: 'contrail1:2181,contrail2:2181,contrail3:2181'
+      #   'KEYSTONE/auth_host':
+      #     value: 192.168.142.42
+      #    'KEYSTONE/auth_protocol':
+      #      value: http
+      #    'KEYSTONE/auth_port':
+      #      value: 35357
+      #    'KEYSTONE/admin_user':
+      #      value: admin
+      #    'KEYSTONE/admin_password':
+      #      value: password
+      #    'KEYSTONE/admin_tenant_name':
+      #      value: admin
+      #    'KEYSTONE/insecure':
+      #      value: true
+      #contrail::analytics::config::topology_config:
+      #    'DEFAULTS/analytics_api':
+      #      value: '192.168.142.42:8081'
+      #    'DEFAULTS/collectors':
+       #     value: '192.168.142.9:8086'
+       #   'DEFAULTS/zookeeper':
+       #     value: 'contrail1:2181,contrail2:2181,contrail3:2181'
+      #contrail::analytics::config::analytics_nodemgr_config:
+      #    'DISCOVERY/server':
+      #      value: '192.168.142.42' 
+      # Control Node
+      #contrail::control::provision_control::api_address: 192.168.142.42
+      #contrail::control::provision_encap::api_address: 192.168.142.42
+      #contrail::control::provision_linklocal::api_address: 192.168.142.42
+      #contrail::control::provision_linklocal::ipfabric_service_ip: 192.168.142.42
+      #contrail::control::config::secret: 'secret123'
+      #contrail::control::config::dns_config:
+     #     'DEFAULT/hostip':
+     #       value: "%{::ipaddress}"
+     #     'DISCOVERY/server':
+     #       value: '192.168.142.42'
+     #     'DEFAULT/rndc_secret':
+     #       value: 'secret123'
+     #     'IFMAP/password':
+     #       value: "%{::ipaddress}.dns"
+     #     'IFMAP/user':
+     #       value: "%{::ipaddress}.dns"
+     # contrail::control::config::control_config:
+     #     'DEFAULT/hostip':
+     #       value: "%{::ipaddress}"
+     #     'DISCOVERY/server':
+     #       value: '192.168.142.42'
+     #     'IFMAP/password':
+     ##       value: "%{::ipaddress}.dns"
+     #     'IFMAP/user':
+     #       value: "%{::ipaddress}.dns"
+     # contrail::control::config::control_nodemgr_config:
+     #     'DISCOVERY/server':
+     #       value: '192.168.142.42' 
+     # contrail::vnc_api::vnc_api_config:
+     #     'global/WEB_SERVER':
+     #       value: 192.168.142.42
+     #     'auth/AUTHN_SERVER':
+     #       value: 192.168.142.42
+
+     # contrail::service_token::keystone_service_token: kpimopmiopmidfmpoifdmsaifdsanufdsqiufwqnufidsapnuipsafds
+
+      #contrail::ctrl_details::keystone_service_token: kpimopmiopmidfmpoifdmsaifdsanufdsqiufwqnufidsapnuipsafds
+      #contrail::ctrl_details::openstack_public_vip: 192.168.142.42
+      #contrail::ctrl_details::openstack_external_vip: 192.168.142.42
+      #contrail::ctrl_details::amqp_ip: 192.168.142.6
+      # Configuration Node
+      #contrail::config::config::basicauthusers_property:
+      #  - 192.168.142.9.dns:192.168.142.9.dns
+      #  - 192.168.142.10.dns:192.168.142.10.dns
+      #  - 192.168.142.11.dns:192.168.142.11.dns
+#      contrail::config::config::schema_config:
+#        'DEFAULTS/api_server_ip':
+#          value: 192.168.142.42
+#        'DEFAULTS/zk_server_ip':
+#          value: contrail1:2181,contrail2:2181,contrail3:2181
+#        'DEFAULTS/cassandra_server_list':
+#          value: contrail1:9160 contrail2:9160 contrail3:9160
+#        'DEFAULTS/disc_server_ip':
+#          value: 192.168.142.42
+#        'KEYSTONE/auth_host':
+#          value: 192.168.142.42
+#        'KEYSTONE/auth_protocol':
+#          value: http
+#        'KEYSTONE/auth_port':
+#          value: 35357
+#        'KEYSTONE/admin_user':
+#          value: admin
+#        'KEYSTONE/admin_password':
+#          value: password
+#        'KEYSTONE/admin_tenant_name':
+#          value: admin
+#        'KEYSTONE/insecure':
+#          value: true
+#      contrail::config::config::device_manager_config:
+#        'DEFAULTS/disc_server_ip':
+#          value: 192.168.142.42
+#        'DEFAULTS/api_server_ip':
+#          value: 192.168.142.42
+#        'DEFAULTS/api_server_port':
+#          value: 8082
+#        'DEFAULTS/rabbit_server':
+#          value: '192.168.142.6,192.168.142.7,192.168.142.8'
+#        'DEFAULTS/zk_server_ip':
+#          value: contrail1,contrail2,contrail3
+#        'DEFAULTS/cassandra_server_list':
+#          value: contrail1:9160 contrail2:9160 contrail3:9160
+#      contrail::config::config::discovery_config:
+#        'DEFAULTS/zk_server_ip':
+#          value: contrail1,contrail2,contrail3
+#        'DEFAULTS/cassandra_server_list':
+#          value: contrail1:9160 contrail2:9160 contrail3:9160
+#        'DNS-SERVER/policy':
+#          value: fixed
+#      contrail::config::config::api_config:
+#        'DEFAULTS/ifmap_server_ip':
+#          value: "%{::ipaddress}"
+#        'DEFAULTS/ifmap_server_port':
+#          value: 8443
+#        'DEFAULTS/cassandra_server_list':
+#          value: contrail1:9160 contrail2:9160 contrail3:9160
+#        'DEFAULTS/multi_tenancy':
+#          value: true
+#        'DEFAULTS/disc_server_ip':
+#          value: 192.168.142.42
+#        'DEFAULTS/zk_server_ip':
+#          value: contrail1:2181,contrail2:2181,contrail3:2181
+#        'DEFAULTS/rabbit_server':
+#          value: '192.168.142.6,192.168.142.7,192.168.142.8'
+#        'DEFAULTS/rabbit_user':
+#          value: contrail
+#        'DEFAULTS/rabbit_password':
+#          value: contrailpassword
+#        'DEFAULTS/rabbit_port':
+#          value: 5672
+#        'KEYSTONE/auth_host':
+#          value: 192.168.142.42
+#        'KEYSTONE/auth_protocol':
+#          value: http
+#        'KEYSTONE/auth_port':
+#          value: 35357
+#        'KEYSTONE/admin_user':
+#          value: admin
+#        'KEYSTONE/admin_password':
+#          value: password
+#        'KEYSTONE/admin_tenant_name':
+#          value: admin
+#        'KEYSTONE/insecure':
+#          value: true
+#      contrail::config::config::svc_monitor_config:
+#        'DEFAULTS/ifmap_server_ip':
+#          value: "%{::ipaddress}"
+#        'DEFAULTS/ifmap_server_port':
+#          value: 8443
+#        'DEFAULTS/api_server_ip':
+#          value: '192.168.142.42'
+#        'DEFAULTS/api_server_port':
+#          value: 8082
+#        'DEFAULTS/cassandra_server_list':
+#          value: contrail1:9160 contrail2:9160 contrail3:9160
+#        'DEFAULTS/disc_server_ip':
+#          value: 192.168.142.42
+#        'DEFAULTS/disc_server_port':
+#          value: 5998
+#        'DEFAULTS/region_name':
+#          value: zone42
+#        'DEFAULTS/zk_server_ip':
+#          value: contrail1:2181,contrail2:2181,contrail3:2181
+#        'DEFAULTS/rabbit_server':
+#          value: '192.168.142.6,192.168.142.7,192.168.142.8'
+#        'DEFAULTS/rabbit_user':
+#          value: contrail
+#        'DEFAULTS/rabbit_password':
+#          value: contrailpassword
+#        'DEFAULTS/rabbit_port':
+#          value: 5672
+#        'KEYSTONE/auth_host':
+#          value: 192.168.142.42
+#        'KEYSTONE/auth_protocol':
+#          value: http
+#        'KEYSTONE/auth_port':
+#          value: 35357
+#        'KEYSTONE/admin_user':
+#          value: admin
+#        'KEYSTONE/admin_password':
+#          value: password
+#        'KEYSTONE/admin_tenant_name':
+#          value: admin
+#        'KEYSTONE/insecure':
+#          value: true
+#        'SCHEDULER/analytics_server_ip':
+#          value: 192.168.142.42
+#      contrail::config::config::config_nodemgr_config:
+#          'DISCOVERY/server':
+#            value: '192.168.142.42' 
+#      contrail::keystone::keystone_config:
+#        'KEYSTONE/auth_host':
+#          value: 192.168.142.42
+#        'KEYSTONE/auth_protocol':
+#          value: http
+#        'KEYSTONE/auth_port':
+#          value: 35357
+#        'KEYSTONE/admin_user':
+#          value: admin
+#        'KEYSTONE/admin_password':
+#          value: password
+#        'KEYSTONE/admin_tenant_name':
+#          value: admin
+#        'KEYSTONE/insecure':
+#          value: true
+
+  contrail2:
+    profile: contrail
+    ip: 192.168.142.10
+    config:
+      zookeeper::id: '2'
+      redis::bind: '0.0.0.0'
+      ntp::iburst_enable: true
+      ntp::servers:
+        - 10.16.151.254
+      ntp::restrict:
+        - 'default nomodify notrap nopeer noquery'
+        - '127.0.0.1'
+        - '-6 ::1'
+#      cloud::network::contrail::webui::http_port: '8079'
+#      cloud::network::contrail::webui::http_bind_ip: '%{::ipaddress}'
+#      cloud::network::contrail::webui::https_bind_ip: '%{::ipaddress}'
+#      cloud::network::contrail::analytics::bind_ip: '%{::ipaddress}'
+#      cloud::network::contrail::config::api_bind_ip: '%{::ipaddress}'
+#      cloud::network::contrail::config::discovery_bind_ip: '%{::ipaddress}'
+#      cassandra::cluster_name: 'contrail'
+#      cassandra::listen_address: "%{::ipaddress}"
+#      cassandra::seeds: '192.168.142.9'
+#      cassandra::cassandra_package_name: cassandra12
+#      cassandra::java_package_name: java-1.7.0-openjdk
+#      cassandra::java_package_ensure: installed
+#      cassandra::manage_dsc_repo: false
+#      cassandra::manage_service: false
+#      cassandra::cassandra_yaml_tmpl: 'cassandra/cassandra1.yaml.erb'
+#      cassandra::rpc_address: "%{::ipaddress}"
+#      zookeeper::servers:
+#        - '192.168.142.9'
+#        - '192.168.142.10'
+#        - '192.168.142.11'
+#      kafka::broker::install_dir: '/usr/share/kafka'
+#      kafka::broker::install_manage: false
+#      kafka::broker::install_java: false
+#      kafka::broker::config:
+#        port: 9092
+#        'broker.id': "%{hiera('zookeeper::id')}"
+#        'host.name': "%{::hostname}"
+#        'zookeeper.connect': '192.168.142.9:2181,192.168.142.10:2181,192.168.142.11:2181'
+#      contrail::vnc_api_config:
+#          'global/WEB_SERVER':
+#            value: 192.168.142.42
+#          'auth/AUTHN_SERVER':
+#            value: 192.168.142.42
+#      contrail::database::config::database_nodemgr_config:
+#          'DEFAULT/hostip':
+#            value: '192.168.142.10'
+#          'DISCOVERY/server':
+#            value: '192.168.142.42'
+#      # WebUI
+#      contrail::webui::config::openstack_vip: '192.168.142.42'
+#      contrail::webui::config::contrail_vip: '192.168.142.42'
+#      contrail::webui::config::cassandra_ip: ['192.168.142.9', '192.168.142.10', '192.168.142.11']
+#      contrail::webui::config::redis_vip: '192.168.142.10'
+#      contrail::webui::config::contrail_webui_http_port: '8079'
+#      contrail::webui::config::contrail_webui_https_port: '8143'
+#      # Analytics Node
+#      contrail::analytics::config::analytics_api_config:
+#         'DEFAULTS/host_ip':
+#           value: '192.168.142.42'
+#         'DEFAULTS/cassandra_server_list':
+#           value: 'contrail2:9160 contrail2:9160 contrail3:9160'
+#         'DEFAULTS/collectors':
+#           value: 'contrail2:8086'
+#         'DISCOVERY/disc_server_ip':
+#           value: '192.168.142.42'
+#      contrail::analytics::config::collector_config:
+#          'DEFAULT/cassandra_server_list':
+#            value: 'contrail1:9160 contrail2:9160 contrail3:9160'
+#          'DEFAULT/kafka_broker_list':
+#            value: 'contrail1:9092 contrail2:9092 contrail3:9092'
+#          'DEFAULT/syslog_port':
+#            value: -1
+#          'DISCOVERY/server':
+#            value: '192.168.142.42'
+#      contrail::analytics::config::query_engine_config:
+#          'DEFAULT/hostip':
+#           value: "%{::ipaddress}"
+#          'DEFAULT/cassandra_server_list':
+#            value: 'contrail1:9160 contrail2:9160 contrail3:9160'
+#      contrail::analytics::config::snmp_collector_config:
+#          'DEFAULTS/api_server':
+#            value: '192.168.142.42:8082'
+#          'DEFAULTS/collectors':
+#            value: '192.168.142.10:8086'
+#          'DISCOVERY/disc_server_ip':
+#            value: '192.168.142.42' 
+#          'DEFAULTS/zookeeper':
+#            value: 'contrail1:2181,contrail2:2181,contrail3:2181'
+#          'KEYSTONE/auth_host':
+#            value: 192.168.142.42
+#          'KEYSTONE/auth_protocol':
+#            value: http
+#          'KEYSTONE/auth_port':
+#            value: 35357
+#          'KEYSTONE/admin_user':
+#            value: admin
+#          'KEYSTONE/admin_password':
+#            value: password
+#          'KEYSTONE/admin_tenant_name':
+#            value: admin
+#          'KEYSTONE/insecure':
+#            value: true
+#      contrail::analytics::config::topology_config:
+#          'DEFAULTS/analytics_api':
+#            value: '192.168.142.42:8081'
+#          'DEFAULTS/collectors':
+#            value: '192.168.142.10:8086'
+#          'DEFAULTS/zookeeper':
+#            value: 'contrail1:2181,contrail2:2181,contrail3:2181'
+#      contrail::analytics::config::analytics_nodemgr_config:
+#          'DISCOVERY/server':
+#            value: '192.168.142.42' 
+#      # Control Node
+#      contrail::control::provision_control::api_address: 192.168.142.42
+#      contrail::control::provision_encap::api_address: 192.168.142.42
+#      contrail::control::provision_linklocal::api_address: 192.168.142.42
+#      contrail::control::provision_linklocal::ipfabric_service_ip: 192.168.142.42
+#      contrail::vnc_api::vnc_api_config:
+#          'global/WEB_SERVER':
+#            value: 192.168.142.42
+#          'auth/AUTHN_SERVER':
+#            value: 192.168.142.42
+#
+#      contrail::service_token::keystone_service_token: kpimopmiopmidfmpoifdmsaifdsanufdsqiufwqnufidsapnuipsafds
+#
+#      contrail::ctrl_details::keystone_service_token: kpimopmiopmidfmpoifdmsaifdsanufdsqiufwqnufidsapnuipsafds
+#      contrail::ctrl_details::openstack_public_vip: 192.168.142.42
+#      contrail::ctrl_details::openstack_external_vip: 192.168.142.42
+#      contrail::ctrl_details::amqp_ip: 192.168.142.6
+#      contrail::control::config::secret: 'secret123'
+#      contrail::control::config::dns_config:
+#          'DEFAULT/hostip':
+#            value: "%{::ipaddress}"
+#          'DISCOVERY/server':
+#            value: '192.168.142.42'
+#          'DEFAULT/rndc_secret':
+#            value: 'secret123'
+#          'IFMAP/password':
+#            value: "%{::ipaddress}.dns"
+#          'IFMAP/user':
+#            value: "%{::ipaddress}.dns"
+#      contrail::control::config::control_config:
+#          'DEFAULT/hostip':
+#            value: "%{::ipaddress}"
+#          'DISCOVERY/server':
+#            value: '192.168.142.42'
+#          'IFMAP/password':
+#            value: "%{::ipaddress}.dns"
+#          'IFMAP/user':
+#            value: "%{::ipaddress}.dns"
+#      contrail::control::config::control_nodemgr_config:
+#          'DISCOVERY/server':
+#            value: '192.168.142.42' 
+#      # Configuration Node
+#      contrail::config::config::basicauthusers_property:
+#        - 192.168.142.9.dns:192.168.142.9.dns
+#        - 192.168.142.10.dns:192.168.142.10.dns
+#        - 192.168.142.11.dns:192.168.142.11.dns
+#      contrail::config::config::schema_config:
+#        'DEFAULTS/api_server_ip':
+#          value: 192.168.142.42
+#        'DEFAULTS/zk_server_ip':
+#          value: contrail1:2181,contrail2:2181,contrail3:2181
+#        'DEFAULTS/cassandra_server_list':
+#          value: contrail1:9160 contrail2:9160 contrail3:9160
+#        'DEFAULTS/disc_server_ip':
+#          value: 192.168.142.42
+#        'KEYSTONE/auth_host':
+#          value: 192.168.142.42
+#        'KEYSTONE/auth_protocol':
+#          value: http
+#        'KEYSTONE/auth_port':
+#          value: 35357
+#        'KEYSTONE/admin_user':
+#          value: admin
+#        'KEYSTONE/admin_password':
+#          value: password
+#        'KEYSTONE/admin_tenant_name':
+#          value: admin
+#        'KEYSTONE/insecure':
+#          value: true
+#      contrail::config::config::device_manager_config:
+#        'DEFAULTS/disc_server_ip':
+#          value: 192.168.142.42
+#        'DEFAULTS/api_server_ip':
+#          value: 192.168.142.42
+#        'DEFAULTS/api_server_port':
+#          value: 8082
+#        'DEFAULTS/rabbit_server':
+#          value: '192.168.142.6,192.168.142.7,192.168.142.8'
+#        'DEFAULTS/zk_server_ip':
+#          value: contrail1,contrail2,contrail3
+#        'DEFAULTS/cassandra_server_list':
+#          value: contrail1:9160 contrail2:9160 contrail3:9160
+#      contrail::config::config::discovery_config:
+#        'DEFAULTS/zk_server_ip':
+#          value: contrail1,contrail2,contrail3
+#        'DEFAULTS/cassandra_server_list':
+#          value: contrail1:9160 contrail2:9160 contrail3:9160
+#        'DNS-SERVER/policy':
+#          value: fixed
+#      contrail::config::config::api_config:
+#        'DEFAULTS/ifmap_server_ip':
+#          value: "%{::ipaddress}"
+#        'DEFAULTS/ifmap_server_port':
+#          value: 8443
+#        'DEFAULTS/cassandra_server_list':
+#          value: contrail1:9160 contrail2:9160 contrail3:9160
+#        'DEFAULTS/multi_tenancy':
+#          value: true
+#        'DEFAULTS/disc_server_ip':
+#          value: 192.168.142.42
+#        'DEFAULTS/zk_server_ip':
+#          value: contrail1:2181,contrail2:2181,contrail3:2181
+#        'DEFAULTS/rabbit_server':
+#          value: '192.168.142.6,192.168.142.7,192.168.142.8'
+#        'DEFAULTS/rabbit_user':
+#          value: contrail
+#        'DEFAULTS/rabbit_password':
+#          value: contrailpassword
+#        'DEFAULTS/rabbit_port':
+#          value: 5672
+#        'KEYSTONE/auth_host':
+#          value: 192.168.142.42
+#        'KEYSTONE/auth_protocol':
+#          value: http
+#        'KEYSTONE/auth_port':
+#          value: 35357
+#        'KEYSTONE/admin_user':
+#          value: admin
+#        'KEYSTONE/admin_password':
+#          value: password
+#        'KEYSTONE/admin_tenant_name':
+#          value: admin
+#        'KEYSTONE/insecure':
+#          value: true
+#      contrail::config::config::svc_monitor_config:
+#        'DEFAULTS/ifmap_server_ip':
+#          value: "%{::ipaddress}"
+#        'DEFAULTS/ifmap_server_port':
+#          value: 8443
+#        'DEFAULTS/api_server_ip':
+#          value: '192.168.142.42'
+#        'DEFAULTS/api_server_port':
+#          value: 8082
+#        'DEFAULTS/cassandra_server_list':
+#          value: contrail1:9160 contrail2:9160 contrail3:9160
+#        'DEFAULTS/disc_server_ip':
+#          value: 192.168.142.42
+#        'DEFAULTS/disc_server_port':
+#          value: 5998
+#        'DEFAULTS/region_name':
+#          value: zone42
+#        'DEFAULTS/zk_server_ip':
+#          value: contrail1:2181,contrail2:2181,contrail3:2181
+#        'DEFAULTS/rabbit_server':
+#          value: '192.168.142.6,192.168.142.7,192.168.142.8'
+#        'DEFAULTS/rabbit_user':
+#          value: contrail
+#        'DEFAULTS/rabbit_password':
+#          value: contrailpassword
+#        'DEFAULTS/rabbit_port':
+#          value: 5672
+#        'KEYSTONE/auth_host':
+#          value: 192.168.142.42
+#        'KEYSTONE/auth_protocol':
+#          value: http
+#        'KEYSTONE/auth_port':
+#          value: 35357
+#        'KEYSTONE/admin_user':
+#          value: admin
+#        'KEYSTONE/admin_password':
+#          value: password
+#        'KEYSTONE/admin_tenant_name':
+#          value: admin
+#        'KEYSTONE/insecure':
+#          value: true
+#        'SCHEDULER/analytics_server_ip':
+#          value: 192.168.142.42
+#      contrail::config::config::config_nodemgr_config:
+#          'DISCOVERY/server':
+#            value: '192.168.142.42' 
+#      contrail::keystone::keystone_config:
+#        'KEYSTONE/auth_host':
+#          value: 192.168.142.42
+#        'KEYSTONE/auth_protocol':
+#          value: http
+#        'KEYSTONE/auth_port':
+#          value: 35357
+#        'KEYSTONE/admin_user':
+#          value: admin
+#        'KEYSTONE/admin_password':
+#          value: password
+#        'KEYSTONE/admin_tenant_name':
+#          value: admin
+#        'KEYSTONE/insecure':
+#          value: true
+
+  contrail3:
+    profile: contrail
+    ip: 192.168.142.11
+    config:
+      zookeeper::id: '3'
+      redis::bind: '0.0.0.0'
+      ntp::iburst_enable: true
+      ntp::servers:
+        - 10.16.151.254
+      ntp::restrict:
+        - 'default nomodify notrap nopeer noquery'
+        - '127.0.0.1'
+        - '-6 ::1'
+#      cloud::network::contrail::webui::http_port: '8079'
+#      cloud::network::contrail::webui::http_bind_ip: '%{::ipaddress}'
+#      cloud::network::contrail::webui::https_bind_ip: '%{::ipaddress}'
+#      cloud::network::contrail::analytics::bind_ip: '%{::ipaddress}'
+#      cloud::network::contrail::config::api_bind_ip: '%{::ipaddress}'
+#      cloud::network::contrail::config::discovery_bind_ip: '%{::ipaddress}'
+#      cassandra::cluster_name: 'contrail'
+#      cassandra::listen_address: "%{::ipaddress}"
+#      cassandra::seeds: '192.168.142.9'
+#      cassandra::cassandra_package_name: cassandra12
+#      cassandra::java_package_name: java-1.7.0-openjdk
+#      cassandra::java_package_ensure: installed
+#      cassandra::manage_dsc_repo: false
+#      cassandra::manage_service: false
+#      cassandra::cassandra_yaml_tmpl: 'cassandra/cassandra1.yaml.erb'
+#      cassandra::rpc_address: "%{::ipaddress}"
+#      zookeeper::servers:
+#        - '192.168.142.9'
+#        - '192.168.142.10'
+#        - '192.168.142.11'
+#      kafka::broker::install_dir: '/usr/share/kafka'
+#      kafka::broker::install_manage: false
+#      kafka::broker::install_java: false
+#      kafka::broker::config:
+#        port: 9092
+#        'broker.id': "%{hiera('zookeeper::id')}"
+#        'host.name': "%{::hostname}"
+#        'zookeeper.connect': '192.168.142.9:2181,192.168.142.10:2181,192.168.142.11:2181'
+#      contrail::vnc_api_config:
+#          'global/WEB_SERVER':
+#            value: 192.168.142.42
+#          'auth/AUTHN_SERVER':
+#            value: 192.168.142.42
+#      contrail::database::config::database_nodemgr_config:
+#          'DEFAULT/hostip':
+#            value: '192.168.142.11'
+#          'DISCOVERY/server':
+#            value: '192.168.142.42'
+#      # WebUI
+#      contrail::webui::config::openstack_vip: '192.168.142.42'
+#      contrail::webui::config::contrail_vip: '192.168.142.42'
+#      contrail::webui::config::cassandra_ip: ['192.168.142.9', '192.168.142.10', '192.168.142.11']
+#      contrail::webui::config::redis_vip: '192.168.142.11'
+#      contrail::webui::config::contrail_webui_http_port: '8079'
+#      contrail::webui::config::contrail_webui_https_port: '8143'
+#      # Analytics Node
+#      contrail::analytics::config::analytics_api_config:
+#         'DEFAULTS/host_ip':
+#           value: '192.168.142.42'
+#         'DEFAULTS/cassandra_server_list':
+#           value: 'contrail1:9160 contrail2:9160 contrail3:9160'
+#         'DEFAULTS/collectors':
+#           value: 'contrail3:8086'
+#         'DISCOVERY/disc_server_ip':
+#           value: '192.168.142.42'
+#      contrail::analytics::config::collector_config:
+#          'DEFAULT/cassandra_server_list':
+#            value: 'contrail1:9160 contrail2:9160 contrail3:9160'
+#          'DEFAULT/kafka_broker_list':
+#            value: 'contrail1:9092 contrail2:9092 contrail3:9092'
+#          'DEFAULT/syslog_port':
+#            value: -1
+#          'DISCOVERY/server':
+#            value: '192.168.142.42'
+#      contrail::analytics::config::query_engine_config:
+#          'DEFAULT/hostip':
+#           value: "%{::ipaddress}"
+#          'DEFAULT/cassandra_server_list':
+#            value: 'contrail1:9160 contrail2:9160 contrail3:9160'
+#      contrail::analytics::config::snmp_collector_config:
+#          'DEFAULTS/api_server':
+#            value: '192.168.142.42:8082'
+#          'DEFAULTS/collectors':
+#            value: '192.168.142.11:8086'
+#          'DISCOVERY/disc_server_ip':
+#            value: '192.168.142.42' 
+#          'DEFAULTS/zookeeper':
+#            value: 'contrail1:2181,contrail2:2181,contrail3:2181'
+#          'KEYSTONE/auth_host':
+#            value: 192.168.142.42
+#          'KEYSTONE/auth_protocol':
+#            value: http
+#          'KEYSTONE/auth_port':
+#            value: 35357
+#          'KEYSTONE/admin_user':
+#            value: admin
+#          'KEYSTONE/admin_password':
+#            value: password
+#          'KEYSTONE/admin_tenant_name':
+#            value: admin
+#          'KEYSTONE/insecure':
+#            value: true
+#      contrail::analytics::config::topology_config:
+#          'DEFAULTS/analytics_api':
+#            value: '192.168.142.42:8081'
+#          'DEFAULTS/collectors':
+#            value: '192.168.142.11:8086'
+#          'DEFAULTS/zookeeper':
+#            value: 'contrail1:2181,contrail2:2181,contrail3:2181'
+#      contrail::analytics::config::analytics_nodemgr_config:
+#          'DISCOVERY/server':
+#            value: '192.168.142.42' 
+#      # Control Node
+#      contrail::control::provision_control::api_address: 192.168.142.42
+#      contrail::control::provision_encap::api_address: 192.168.142.42
+#      contrail::control::provision_linklocal::api_address: 192.168.142.42
+#      contrail::control::provision_linklocal::ipfabric_service_ip: 192.168.142.42
+#      contrail::vnc_api::vnc_api_config:
+#          'global/WEB_SERVER':
+#            value: 192.168.142.42
+#          'auth/AUTHN_SERVER':
+#            value: 192.168.142.42
+#
+#      contrail::service_token::keystone_service_token: kpimopmiopmidfmpoifdmsaifdsanufdsqiufwqnufidsapnuipsafds
+#
+#      contrail::ctrl_details::keystone_service_token: kpimopmiopmidfmpoifdmsaifdsanufdsqiufwqnufidsapnuipsafds
+#      contrail::ctrl_details::openstack_public_vip: 192.168.142.42
+#      contrail::ctrl_details::openstack_external_vip: 192.168.142.42
+#      contrail::ctrl_details::amqp_ip: 192.168.142.6
+#      contrail::control::config::secret: 'secret123'
+#      contrail::control::config::dns_config:
+#          'DEFAULT/hostip':
+#            value: "%{::ipaddress}"
+#          'DISCOVERY/server':
+#            value: '192.168.142.42'
+#          'DEFAULT/rndc_secret':
+#            value: 'secret123'
+#          'IFMAP/password':
+#            value: "%{::ipaddress}.dns"
+#          'IFMAP/user':
+#            value: "%{::ipaddress}.dns"
+#      contrail::control::config::control_config:
+#          'DEFAULT/hostip':
+#            value: "%{::ipaddress}"
+#          'DISCOVERY/server':
+#            value: '192.168.142.42'
+#          'IFMAP/password':
+#            value: "%{::ipaddress}.dns"
+#          'IFMAP/user':
+#            value: "%{::ipaddress}.dns"
+#      contrail::control::config::control_nodemgr_config:
+#          'DISCOVERY/server':
+#            value: '192.168.142.42' 
+#      # Configuration Node
+#      contrail::config::config::basicauthusers_property:
+#        - 192.168.142.9.dns:192.168.142.9.dns
+#        - 192.168.142.10.dns:192.168.142.10.dns
+#        - 192.168.142.11.dns:192.168.142.11.dns
+#      contrail::config::config::schema_config:
+#        'DEFAULTS/api_server_ip':
+#          value: 192.168.142.42
+#        'DEFAULTS/zk_server_ip':
+#          value: contrail1:2181,contrail2:2181,contrail3:2181
+#        'DEFAULTS/cassandra_server_list':
+#          value: contrail1:9160 contrail2:9160 contrail3:9160
+#        'DEFAULTS/disc_server_ip':
+#          value: 192.168.142.42
+#        'KEYSTONE/auth_host':
+#          value: 192.168.142.42
+#        'KEYSTONE/auth_protocol':
+#          value: http
+#        'KEYSTONE/auth_port':
+#          value: 35357
+#        'KEYSTONE/admin_user':
+#          value: admin
+#        'KEYSTONE/admin_password':
+#          value: password
+#        'KEYSTONE/admin_tenant_name':
+#          value: admin
+#        'KEYSTONE/insecure':
+#          value: true
+#      contrail::config::config::device_manager_config:
+#        'DEFAULTS/disc_server_ip':
+#          value: 192.168.142.42
+#        'DEFAULTS/api_server_ip':
+#          value: 192.168.142.42
+#        'DEFAULTS/api_server_port':
+#          value: 8082
+#        'DEFAULTS/rabbit_server':
+#          value: '192.168.142.6,192.168.142.7,192.168.142.8'
+#        'DEFAULTS/zk_server_ip':
+#          value: contrail1,contrail2,contrail3
+#        'DEFAULTS/cassandra_server_list':
+#          value: contrail1:9160 contrail2:9160 contrail3:9160
+#      contrail::config::config::discovery_config:
+#        'DEFAULTS/zk_server_ip':
+#          value: contrail1,contrail2,contrail3
+#        'DEFAULTS/cassandra_server_list':
+#          value: contrail1:9160 contrail2:9160 contrail3:9160
+#        'DNS-SERVER/policy':
+#          value: fixed
+#      contrail::config::config::api_config:
+#        'DEFAULTS/cassandra_server_list':
+#          value: contrail1:9160 contrail2:9160 contrail3:9160
+#        'DEFAULTS/multi_tenancy':
+#          value: true
+#        'DEFAULTS/disc_server_ip':
+#          value: 192.168.142.42
+#        'DEFAULTS/zk_server_ip':
+#          value: contrail1:2181,contrail2:2181,contrail3:2181
+#        'DEFAULTS/rabbit_server':
+#          value: '192.168.142.6,192.168.142.7,192.168.142.8'
+#        'DEFAULTS/rabbit_user':
+#          value: contrail
+#        'DEFAULTS/rabbit_password':
+#          value: contrailpassword
+#        'DEFAULTS/rabbit_port':
+#          value: 5672
+#        'KEYSTONE/auth_host':
+#          value: 192.168.142.42
+#        'KEYSTONE/auth_protocol':
+#          value: http
+#        'KEYSTONE/auth_port':
+#          value: 35357
+#        'KEYSTONE/admin_user':
+#          value: admin
+#        'KEYSTONE/admin_password':
+#          value: password
+#        'KEYSTONE/admin_tenant_name':
+#          value: admin
+#        'KEYSTONE/insecure':
+#          value: true
+#      contrail::config::config::svc_monitor_config:
+#        'DEFAULTS/ifmap_server_ip':
+#          value: "%{::ipaddress}"
+#        'DEFAULTS/ifmap_server_port':
+#          value: 8443
+#        'DEFAULTS/api_server_ip':
+#          value: '192.168.142.42'
+#        'DEFAULTS/api_server_port':
+#          value: 8082
+#        'DEFAULTS/cassandra_server_list':
+#          value: contrail1:9160 contrail2:9160 contrail3:9160
+#        'DEFAULTS/disc_server_ip':
+#          value: 192.168.142.42
+#        'DEFAULTS/disc_server_port':
+#          value: 5998
+#        'DEFAULTS/region_name':
+#          value: zone42
+#        'DEFAULTS/zk_server_ip':
+#          value: contrail1:2181,contrail2:2181,contrail3:2181
+#        'DEFAULTS/rabbit_server':
+#          value: '192.168.142.6,192.168.142.7,192.168.142.8'
+#        'DEFAULTS/rabbit_user':
+#          value: contrail
+#        'DEFAULTS/rabbit_password':
+#          value: contrailpassword
+#        'DEFAULTS/rabbit_port':
+#          value: 5672
+#        'KEYSTONE/auth_host':
+#          value: 192.168.142.42
+#        'KEYSTONE/auth_protocol':
+#          value: http
+#        'KEYSTONE/auth_port':
+#          value: 35357
+#        'KEYSTONE/admin_user':
+#          value: admin
+#        'KEYSTONE/admin_password':
+#          value: password
+#        'KEYSTONE/admin_tenant_name':
+#          value: admin
+#        'KEYSTONE/insecure':
+#          value: true
+#        'SCHEDULER/analytics_server_ip':
+#          value: 192.168.142.42
+#      contrail::config::config::config_nodemgr_config:
+#          'DISCOVERY/server':
+#            value: '192.168.142.42' 
+#      contrail::keystone::keystone_config:
+#        'KEYSTONE/auth_host':
+#          value: 192.168.142.42
+#        'KEYSTONE/auth_protocol':
+#          value: http
+#        'KEYSTONE/auth_port':
+#          value: 35357
+#        'KEYSTONE/admin_user':
+#          value: admin
+#        'KEYSTONE/admin_password':
+#          value: password
+#        'KEYSTONE/admin_tenant_name':
+#          value: admin
+#        'KEYSTONE/insecure':
+#          value: true
 
 config:
   domain: example.com
@@ -427,11 +1445,11 @@ config:
     - 192.168.142.7:27017
     - 192.168.142.8:27017
   
-  ntp_servers:
-    - 0.centos.pool.ntp.org
-    - 1.centos.pool.ntp.org
-    - 2.centos.pool.ntp.org
-    - 3.centos.pool.ntp.org
+  #ntp_servers:
+  #  - 0.centos.pool.ntp.org
+  #  - 1.centos.pool.ntp.org
+  #  - 2.centos.pool.ntp.org
+  #  - 3.centos.pool.ntp.org
 
   root_password: root
   
@@ -449,7 +1467,7 @@ config:
   storage_netif_ip: "%{::ipaddress_eth0}"
 
   keystone_db_user: keystone
-  keystone_db_password: kestone_db_password
+  keystone_db_password: keystone_db_password
   ks_admin_email: admin@example.com
   ks_admin_password: password
   ks_admin_tenant: admin
@@ -564,7 +1582,7 @@ config:
   syslog_server: installserver
   syslog_port: 5140
 
-  mongodb_version: 2.6.5-2.el7ost
+  mongodb_version: 2.6.9-1.el7
   erlang_cookie: acookie
 
   redis_master_name: openstack1.example.com
@@ -572,3 +1590,13 @@ config:
   sudo_configs:
     'vagrant':
       'content': 'sensu ALL = NOPASSWD:ALL'
+
+  # Contrail Specific settings
+  neutron_plugin: opencontrail
+  contrail_nodes:
+    - 192.168.142.9
+    - 192.168.142.10
+    - 192.168.142.11
+  cassandra_seeds: 192.168.142.9
+  contrail_compute_gateway: 192.168.142.1
+
